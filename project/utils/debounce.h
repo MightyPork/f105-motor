@@ -24,7 +24,7 @@ void debounce_init(size_t pin_count);
 /**
  * @brief 1 ms periodic callback for debouncer. Must be registered to timebase.
  */
-void debo_periodic_task(void);
+void debo_periodic_task(void*);
 
 
 typedef struct {

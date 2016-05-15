@@ -3,6 +3,8 @@
 #include "timebase.h"
 #include "malloc_safe.h"
 
+#include "com/debug.h"
+
 // ms debounce time
 
 #define DEF_DEBO_TIME 20
@@ -90,8 +92,10 @@ debo_id_t debo_register_pin(debo_init_t *init)
 
 
 /** Callback that must be called every 1 ms */
-void debo_periodic_task(void)
+void debo_periodic_task(void *arg)
 {
+	(void)arg;
+
 	for (size_t i = 0; i < debo_slot_count; i++) {
 		debo_slot_t *slot = &debo_slots[i];
 		if (slot->id == DEBO_PIN_NONE) continue; // unused
@@ -102,9 +106,9 @@ void debo_periodic_task(void)
 		if (slot->state != state) {
 			if (state == 0) {
 				// falling
-
-				if (slot->counter_0++ == slot->debo_time) {
+				if (slot->counter_0++ >= slot->debo_time) {
 					slot->state = 0;
+
 
 					if (slot->falling_cb != NULL) {
 						slot->falling_cb();
@@ -112,9 +116,9 @@ void debo_periodic_task(void)
 				}
 			} else {
 				// rising
-
-				if (slot->counter_1++ == slot->debo_time) {
+				if (slot->counter_1++ >= slot->debo_time) {
 					slot->state = 1;
+
 
 					if (slot->rising_cb != NULL) {
 						slot->rising_cb();

@@ -66,7 +66,7 @@ static void if_poll(ComIface *iface)
 	(void)iface;
 }
 
-ComIface *com_noop_init(void)
+ComIface *noop_iface_init(void)
 {
 	ComIface *iface = malloc_s(sizeof(ComIface));
 

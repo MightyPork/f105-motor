@@ -9,6 +9,7 @@ DEFS          += -DF_CPU=72000000UL
 DEFS          += -DSTM32F10X_MD
 DEFS          += -DARM_MATH_CM3
 DEFS          += -DUSE_STDPERIPH_DRIVER
+DEFS          += -DST_DSPIN_6470H_DISCOVERY
 
 LDSCRIPT       = lib/cmsis/stm32_flash.ld
 STARTUP_SCRIPT = lib/cmsis/startup_stm32f10x_md.s

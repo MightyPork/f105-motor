@@ -20,7 +20,7 @@ struct name_fd {
 
 /** pre-assigned file descriptors for names */
 static const struct name_fd name_fd_map[NAME_FD_MAP_LEN] = {
-	{FNAME_DLNK, FD_DLNK}
+//	{FNAME_DLNK, FD_DLNK}
 };
 
 
@@ -39,7 +39,6 @@ int _write(int fd, const char *buf, int len)
 	switch (fd) {
 		case FD_STDOUT:	return (int)com_tx_block(debug_iface, buf, (size_t)len);
 		case FD_STDERR:	return (int)com_tx_block(debug_iface, buf, (size_t)len);
-		case FD_DLNK: return (int)com_tx_block(data_iface, buf, (size_t)len);
 		default:
 			return 0;
 	}

@@ -13,6 +13,8 @@
 
 #define ESCAPE_DEBUG_MESSAGES 1
 
+#define VERBOSE_LOGGING 1
+
 
 // formatting symbols
 #define DEBUG_EOL "\r\n"

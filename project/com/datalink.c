@@ -2,6 +2,7 @@
 #include "com_fileio.h"
 #include "debug.h"
 #include "com_fileio.h"
+#include "dspin.h"
 
 SBMP_Endpoint *dlnk_ep;
 
@@ -30,6 +31,9 @@ void dlnk_init(void)
 static void dlnk_rx_bridge(ComIface *iface)
 {
 	uint8_t b;
+
+	STATUS_LED_Port->BSRR = STATUS_LED_Pin;
+
 	while (com_rx(iface, &b)) {
 		SBMP_RxStatus st = sbmp_ep_receive(dlnk_ep, b);
 
@@ -39,6 +43,8 @@ static void dlnk_rx_bridge(ComIface *iface)
 			break;
 		}
 	}
+
+	STATUS_LED_Port->BRR = STATUS_LED_Pin;
 }
 
 /** Datalink Tx func */

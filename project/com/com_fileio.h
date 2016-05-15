@@ -17,7 +17,4 @@ enum {
 	FD_STDIN  = 0,
 	FD_STDOUT = 1,
 	FD_STDERR = 2,
-	FD_DLNK = 3,
 };
-
-#define FNAME_DLNK "dlnk"

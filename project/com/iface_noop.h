@@ -11,4 +11,4 @@
  * @param iface : iface pointer. If NULL, it'll be allocated.
  * @return the iface pointer.
  */
-ComIface *com_noop_init(void);
+ComIface *noop_iface_init(void);

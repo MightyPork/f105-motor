@@ -16,14 +16,13 @@
 #include "dspin.h"
 #include "blinky.h"
 
- // 7.5deg motor -> 48 full steps. We use 128 step mode -> 6144 = full circle
+// 7.5deg motor -> 48 full steps. We use 128 step mode -> 6144 = full circle
 #define STEPS_360 6144
-
 
 static void poll_subsystems(void);
 static void conf_buttons(void);
 
-
+/** Main program function */
 int main(void)
 {
 	hw_init();
@@ -55,21 +54,21 @@ int main(void)
 	}
 }
 
-
+/** Left button was pressed */
 void left_btn_click(void)
 {
-	led_blink(LED_BUSY, 500);
-	dSPIN_Move(FWD, STEPS_360/4);
+	led_blink(LED_BUSY, 100);
+	dSPIN_Move(FWD, STEPS_360 / 4); // rotate by 90deg
 }
 
-
+/** Right button was pressed */
 void right_btn_click(void)
 {
-	led_blink(LED_ERROR, 250);
-	dSPIN_Move(REV, STEPS_360/4);
+	led_blink(LED_ERROR, 100);
+	dSPIN_Move(REV, STEPS_360 / 4); // rotate by -90deg
 }
 
-
+/** Datagram rx on SBMP */
 void dlnk_rx(SBMP_Datagram *dg)
 {
 	(void)dg;
@@ -88,7 +87,7 @@ void dlnk_rx(SBMP_Datagram *dg)
 	}
 }
 
-
+/** Configure debouncer and button callbacks */
 static void conf_buttons(void)
 {
 	debounce_init(2);
@@ -113,7 +112,7 @@ static void conf_buttons(void)
 	add_periodic_task(debo_periodic_task, NULL, 10, true);
 }
 
-
+/** Poll subsystems, called in the main loop */
 static void poll_subsystems(void)
 {
 	// poll serial buffers (runs callback)

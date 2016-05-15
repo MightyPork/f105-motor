@@ -21,6 +21,7 @@
 
 static void poll_subsystems(void);
 static void conf_buttons(void);
+static void try_sbmp_hsk(void *unused);
 
 /** Main program function */
 int main(void)
@@ -43,6 +44,8 @@ int main(void)
 
 	// Green LED starts flashing...
 
+	add_periodic_task(try_sbmp_hsk, NULL, 500, true);
+
 	ms_time_t t = ms_now();
 	while (1) {
 		poll_subsystems();
@@ -54,21 +57,30 @@ int main(void)
 	}
 }
 
+static void try_sbmp_hsk(void *unused)
+{
+	(void)unused;
+
+	if (sbmp_ep_handshake_status(dlnk_ep) != SBMP_HSK_SUCCESS) {
+		sbmp_ep_start_handshake(dlnk_ep);
+	}
+}
+
 /** Left button was pressed */
-void left_btn_click(void)
+static void left_btn_click(void)
 {
 	led_blink(LED_BUSY, 100);
 	dSPIN_Move(FWD, STEPS_360 / 4); // rotate by 90deg
 }
 
 /** Right button was pressed */
-void right_btn_click(void)
+static void right_btn_click(void)
 {
 	led_blink(LED_ERROR, 100);
 	dSPIN_Move(REV, STEPS_360 / 4); // rotate by -90deg
 }
 
-/** Datagram rx on SBMP */
+/** Datagram rx on SBMP (extern declated in datalink.h) */
 void dlnk_rx(SBMP_Datagram *dg)
 {
 	(void)dg;

@@ -67,17 +67,27 @@ static void try_sbmp_hsk(void *unused)
 }
 
 /** Left button was pressed */
-static void left_btn_click(void)
+static void left_btn_down(void)
 {
-	led_blink(LED_BUSY, 100);
-	dSPIN_Move(FWD, STEPS_360 / 4); // rotate by 90deg
+	dSPIN_Run(REV, STEPS_360*2);
 }
 
 /** Right button was pressed */
-static void right_btn_click(void)
+static void right_btn_down(void)
 {
-	led_blink(LED_ERROR, 100);
-	dSPIN_Move(REV, STEPS_360 / 4); // rotate by -90deg
+	dSPIN_Run(FWD, STEPS_360*2);
+}
+
+/** Left button was pressed */
+static void left_btn_up(void)
+{
+	dSPIN_Soft_Stop();
+}
+
+/** Right button was pressed */
+static void right_btn_up(void)
+{
+	dSPIN_Soft_Stop();
 }
 
 /** Datagram rx on SBMP (extern declated in datalink.h) */
@@ -87,14 +97,25 @@ void dlnk_rx(SBMP_Datagram *dg)
 
 	PayloadParser pp = pp_start(dg->payload, dg->length);
 
+	int32_t speed;
+	uint8_t fwd;
+
+	led_blink(LED_BUSY, 50);
+
 	switch (dg->type) {
-		case DG_MOTOR_HOME:
-			dSPIN_Go_Home();
+		case DG_MOTOR_START:
+			fwd = (bool) pp_u8(&pp);
+			speed = pp_u32(&pp);
+
+			if (speed > 6144*3) {
+				speed = 6144*3;
+			}
+
+			dSPIN_Run(fwd ? FWD : REV, speed);
 			break;
 
-		case DG_MOTOR_GOTO:;
-			int32_t pos = pp_i32(&pp);
-			dSPIN_Go_To(pos);
+		case DG_MOTOR_STOP:
+			dSPIN_Soft_Stop();
 			break;
 	}
 }
@@ -112,13 +133,15 @@ static void conf_buttons(void)
 	// button A
 	debo.GPIOx = BUTTON_A_Port;
 	debo.pin = BUTTON_A_Pin;
-	debo.rising_cb = left_btn_click;
+	debo.rising_cb = left_btn_down;
+	debo.falling_cb = left_btn_up;
 	debo_register_pin(&debo);
 
 	// Button B
 	debo.GPIOx = BUTTON_B_Port;
 	debo.pin = BUTTON_B_Pin;
-	debo.rising_cb = right_btn_click;
+	debo.rising_cb = right_btn_down;
+	debo.falling_cb = right_btn_up;
 	debo_register_pin(&debo);
 
 	add_periodic_task(debo_periodic_task, NULL, 10, true);
